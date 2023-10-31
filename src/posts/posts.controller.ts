@@ -1,4 +1,13 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 
 /**
@@ -18,7 +27,7 @@ interface PostModel {
   commentCount: number;
 }
 
-const posts: PostModel[] = [
+let posts: PostModel[] = [
   {
     id: 1,
     author: 'John Doe',
@@ -44,6 +53,7 @@ const posts: PostModel[] = [
     commentCount: 34,
   },
 ];
+
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
@@ -60,5 +70,63 @@ export class PostsController {
       throw new NotFoundException('The post is not found');
     }
     return post;
+  }
+
+  @Post()
+  postPosts(
+    @Body('author') author: string,
+    @Body('title') title: string,
+    @Body('content') content: string,
+  ) {
+    const post = {
+      id: posts[posts.length - 1].id + 1,
+      author,
+      title,
+      content,
+      likeCount: 0,
+      commentCount: 0,
+    };
+
+    posts = [...posts, post];
+
+    return post;
+  }
+
+  @Put(':id')
+  putPost(
+    @Param('id') id: string,
+    @Body('author') author?: string,
+    @Body('title') title?: string,
+    @Body('content') content?: string,
+  ) {
+    const post = posts.find((post) => post.id === +id);
+    if (!post) {
+      throw new NotFoundException('The post is not found');
+    }
+
+    if (author) {
+      post.author = author;
+    }
+
+    if (title) {
+      post.title = title;
+    }
+
+    if (content) {
+      post.content = content;
+    }
+
+    posts = posts.map((prevPost) => (prevPost.id === +id ? post : prevPost));
+    return post;
+  }
+
+  @Delete(':id')
+  deletePost(@Param('id') id: string) {
+    const post = posts.find((post) => post.id === +id);
+    if (!post) {
+      throw new NotFoundException('The post is not found');
+    }
+    posts = posts.filter((post) => post.id !== +id);
+    return id;
   }
 }
