@@ -3,23 +3,22 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
-import { PostModel, PostsService } from './posts.service';
+import { PostsService } from './posts.service';
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  getPosts(): PostModel[] {
+  getPosts() {
     return this.postsService.getAllPosts();
   }
 
   @Get(':id')
-  getPost(@Param('id') id: string): PostModel {
+  getPost(@Param('id') id: string) {
     return this.postsService.getPostById(+id);
   }
 
