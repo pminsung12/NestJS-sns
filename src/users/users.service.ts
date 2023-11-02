@@ -11,7 +11,7 @@ export class UsersService {
   ) {}
 
   async getAllUsers() {
-    return this.usersRepository.find();
+    return this.usersRepository.find({ relations: ['posts'] });
   }
 
   async createUser(nickname: string, email: string, password: string) {
