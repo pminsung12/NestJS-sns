@@ -20,6 +20,11 @@ export class AuthService {
    * 3) type : 'access | refresh'
    */
 
+  /**
+   * authorization 헤더에서 토큰 추출
+   * @param header
+   * @param isBearer
+   */
   extractTokenFromHeader(header: string, isBearer: boolean) {
     const splitToken = header.split(' ');
     const prefix = isBearer ? 'Bearer' : 'Basic';
@@ -31,6 +36,11 @@ export class AuthService {
     const token = splitToken[1];
     return token;
   }
+
+  /**
+   * Basic Token
+   * @param base64String
+   */
 
   decodeBasicToken(base64String: string) {
     const decoded = Buffer.from(base64String, 'base64').toString('utf8');
@@ -44,6 +54,37 @@ export class AuthService {
     return { email, password };
   }
 
+  /**
+   * 토큰 검증
+   * @param token
+   */
+  verifyToken(token: string) {
+    return this.jwtService.verify(token, {
+      secret: JWT_SECRET,
+    });
+  }
+
+  /**
+   * 토큰 재발급
+   * @param token
+   * @param isRefreshToken
+   */
+  rotateToken(token: string, isRefreshToken: boolean) {
+    const decoded = this.verifyToken(token);
+
+    if (decoded.type !== 'refresh') {
+      throw new UnauthorizedException(
+        '토큰 재발급은 Refresh 토큰으로만 가능합니다.',
+      );
+    }
+    return this.signToken(
+      {
+        ...decoded,
+      },
+      isRefreshToken,
+    );
+  }
+
   signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
     const payload = {
       email: user.email,
@@ -53,7 +94,7 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       secret: JWT_SECRET,
       //seconds
-      expiresIn: isRefreshToken ? '3600' : '300',
+      expiresIn: isRefreshToken ? 3600 : 300,
     });
   }
 
