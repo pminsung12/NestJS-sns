@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 /**
  * author: string;
@@ -46,7 +47,8 @@ export class PostsService {
     return newPost;
   }
 
-  async updatePost(postId: number, title: string, content: string) {
+  async updatePost(postId: number, updatePostDto: UpdatePostDto) {
+    const { title, content } = updatePostDto;
     const post = await this.postsRepository.findOne({ where: { id: postId } });
     if (!post) {
       throw new NotFoundException('The post is not found');
