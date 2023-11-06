@@ -24,7 +24,7 @@ export class PostsController {
 
   @Get()
   getPosts(@Query() query: PaginatePostDto) {
-    return this.postsService.paginationPosts(query);
+    return this.postsService.paginatePosts(query);
   }
 
   @Post('random')
