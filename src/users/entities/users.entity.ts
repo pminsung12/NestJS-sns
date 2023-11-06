@@ -6,6 +6,7 @@ import { IsEmail, IsString, Length } from 'class-validator';
 import { lengthValidationMessage } from '../../common/validation-message/length-validation.message';
 import { stringValidationMessage } from '../../common/validation-message/string-validation.message';
 import { emailValidationMessage } from '../../common/validation-message/email-validation.message';
+import { Exclude } from 'class-transformer';
 @Entity()
 export class UsersModel extends BaseModel {
   @Column({ unique: true, length: 20 })
@@ -24,6 +25,9 @@ export class UsersModel extends BaseModel {
   @IsString({ message: stringValidationMessage })
   @Length(3, 8, {
     message: lengthValidationMessage,
+  })
+  @Exclude({
+    toPlainOnly: true, // 응답이 나가는 상황에서만 제외된다. (요청 받을 땐 제외되지 않음)
   })
   password: string;
 
