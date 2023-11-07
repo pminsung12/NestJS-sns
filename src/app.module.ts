@@ -15,12 +15,17 @@ import {
   ENV_DB_PASSWORD,
   ENV_DB_PORT,
   ENV_DB_USERNAME,
-  ENV_HOST_KEY,
 } from './common/const/env-keys.const';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 
 @Module({
   imports: [
     PostsModule,
+    ServeStaticModule.forRoot({
+      rootPath: PUBLIC_FOLDER_PATH, // http://localhost:3000/posts/xxx.jpg => endpoint가 겹치는 문제 발생!
+      serveRoot: '/public', // http://localhost:3000/public/posts/xxx.jpg
+    }),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
