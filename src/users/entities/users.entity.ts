@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, JoinTable } from 'typeorm';
 import { RolesEnum } from '../const/roles.const';
 import { PostsModel } from '../../posts/entities/posts.entity';
 import { BaseModel } from '../../common/entity/base.entity';
@@ -7,6 +7,7 @@ import { lengthValidationMessage } from '../../common/validation-message/length-
 import { stringValidationMessage } from '../../common/validation-message/string-validation.message';
 import { emailValidationMessage } from '../../common/validation-message/email-validation.message';
 import { Exclude } from 'class-transformer';
+import { ChatsModel } from '../../chats/entity/chats.entity';
 @Entity()
 export class UsersModel extends BaseModel {
   @Column({ unique: true, length: 20 })
@@ -39,4 +40,10 @@ export class UsersModel extends BaseModel {
 
   @OneToMany(() => PostsModel, (post) => post.author)
   posts: PostsModel[];
+
+  // JoinTable은 ManyToMany에서 둘 중 하나의 테이블에만 적용하면 되고,
+  // 사용하는 이유는 두 테이블을 연결해주는 테이블을 만들어주기 위함이다.
+  @ManyToMany(() => ChatsModel, (chat) => chat.users)
+  @JoinTable()
+  chats: ChatsModel[];
 }
