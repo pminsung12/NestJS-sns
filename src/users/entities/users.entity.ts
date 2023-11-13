@@ -8,6 +8,7 @@ import { stringValidationMessage } from '../../common/validation-message/string-
 import { emailValidationMessage } from '../../common/validation-message/email-validation.message';
 import { Exclude } from 'class-transformer';
 import { ChatsModel } from '../../chats/entity/chats.entity';
+import { MessagesModel } from '../../chats/messages/entity/messages.entity';
 @Entity()
 export class UsersModel extends BaseModel {
   @Column({ unique: true, length: 20 })
@@ -46,4 +47,7 @@ export class UsersModel extends BaseModel {
   @ManyToMany(() => ChatsModel, (chat) => chat.users)
   @JoinTable()
   chats: ChatsModel[];
+
+  @OneToMany(() => MessagesModel, (message) => message.author)
+  messages: MessagesModel;
 }
